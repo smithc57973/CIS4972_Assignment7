@@ -29,9 +29,9 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (canMove)
+        if (true)
         {
-            if (Input.GetKey(KeyCode.A) && checkWall(Vector3.left))
+            if (Input.GetKey(KeyCode.A))
             {
                 moveLeft.Execute();
                 history.Push(moveLeft);
@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.D) && checkWall(Vector3.right))
+            if (Input.GetKey(KeyCode.D))
             {
                 moveRight.Execute();
                 history.Push(moveRight);
@@ -49,7 +49,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.W) && checkWall(Vector3.forward))
+            if (Input.GetKey(KeyCode.W))
             {
                 moveUp.Execute();
                 history.Push(moveLeft);
@@ -58,7 +58,7 @@ public class PlayerController : MonoBehaviour
                 StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.S) && checkWall(Vector3.back))
+            if (Input.GetKey(KeyCode.S))
             {
                 moveDown.Execute();
                 history.Push(moveRight);
@@ -86,20 +86,5 @@ public class PlayerController : MonoBehaviour
         yield return new WaitForSeconds(1f);
         canMove = true;
         yield return new WaitForSeconds(1f);
-    }
-
-    public bool checkWall(Vector3 direction)
-    {
-        Ray r = new Ray(transform.position + new Vector3(0, 0.25f, 0), direction);
-        RaycastHit h;
-
-        if (Physics.Raycast(r, out h))
-        {
-            if (h.collider.tag == "Wall")
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }
