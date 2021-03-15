@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
 {
@@ -9,10 +10,12 @@ public class PlayerController : MonoBehaviour
     private Command moveRight;
     private Command moveUp;
     private Command moveDown;
-
     public Stack<Command> history;
+
     public int movesUsed;
+    public int maxMoves;
     public bool canMove;
+    public UIManager ui;
 
     void Awake()
     {
@@ -23,12 +26,24 @@ public class PlayerController : MonoBehaviour
         history = new Stack<Command>();
         m = GetComponent<Moveable>();
         movesUsed = 0;
+        maxMoves = 10;
         canMove = true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (movesUsed == maxMoves)
+        {
+            canMove = false;
+            ui.text.text = "Game Over! Press R to restart.";
+        }
+
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        }
+
         if (canMove)
         {
             if (Input.GetKey(KeyCode.A) && checkWall(Vector3.left))
@@ -101,5 +116,14 @@ public class PlayerController : MonoBehaviour
             }
         }
         return true;
+    }
+
+    public void OnTriggerEnter(Collider other)
+    {
+        if (other.tag.Equals("Goal"))
+        {
+            canMove = false;
+            ui.text.text = "You Win! Press R to restart.";
+        }
     }
 }
