@@ -1,3 +1,10 @@
+/*
+ * Chris Smith
+ * MoveRight
+ * Assignment 7
+ * A Command that executes Moveable right and stores that movement in a stack, this can be undone.
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,7 +24,6 @@ public class MoveRight : Command
     public void Execute()
     {
         history.Push(move.GetPosition());
-
         move.MoveRight();
 
     }

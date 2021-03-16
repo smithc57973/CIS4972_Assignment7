@@ -1,3 +1,10 @@
+/*
+ * Chris Smith
+ * PlayerController
+ * Assignment 7
+ * A script to manage player inputs.
+ */
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -14,7 +21,7 @@ public class PlayerController : MonoBehaviour
 
     public int movesUsed;
     public int maxMoves;
-    public bool canMove;
+    public bool gameOver;
     public UIManager ui;
 
     void Awake()
@@ -26,16 +33,16 @@ public class PlayerController : MonoBehaviour
         history = new Stack<Command>();
         m = GetComponent<Moveable>();
         movesUsed = 0;
-        maxMoves = 10;
-        canMove = true;
+        maxMoves = 2500;
+        gameOver = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (movesUsed == maxMoves)
+        if (movesUsed >= maxMoves)
         {
-            canMove = false;
+            gameOver = true;
             ui.text.text = "Game Over! Press R to restart.";
         }
 
@@ -44,42 +51,34 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene(SceneManager.GetActiveScene().name);
         }
 
-        if (canMove)
+        if (!gameOver)
         {
-            if (Input.GetKey(KeyCode.A) && checkWall(Vector3.left))
+            if (Input.GetKey(KeyCode.A))
             {
                 moveLeft.Execute();
                 history.Push(moveLeft);
                 movesUsed++;
-                canMove = false;
-                StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.D) && checkWall(Vector3.right))
+            if (Input.GetKey(KeyCode.D))
             {
                 moveRight.Execute();
                 history.Push(moveRight);
                 movesUsed++;
-                canMove = false;
-                StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.W) && checkWall(Vector3.forward))
+            if (Input.GetKey(KeyCode.W))
             {
                 moveUp.Execute();
                 history.Push(moveLeft);
                 movesUsed++;
-                canMove = false;
-                StartCoroutine(Cooldown());
             }
 
-            if (Input.GetKey(KeyCode.S) && checkWall(Vector3.back))
+            if (Input.GetKey(KeyCode.S))
             {
                 moveDown.Execute();
                 history.Push(moveRight);
                 movesUsed++;
-                canMove = false;
-                StartCoroutine(Cooldown());
             }
 
             if (Input.GetKey(KeyCode.Q))
@@ -89,40 +88,16 @@ public class PlayerController : MonoBehaviour
                     Command last = history.Pop();
                     last.Undo();
                     movesUsed--;
-                    canMove = false;
-                    StartCoroutine(Cooldown());
                 }
             }
         }
-    }
-
-    public IEnumerator Cooldown()
-    {
-        yield return new WaitForSeconds(1f);
-        canMove = true;
-        yield return new WaitForSeconds(1f);
-    }
-
-    public bool checkWall(Vector3 direction)
-    {
-        Ray r = new Ray(transform.position + new Vector3(0, 0.25f, 0), direction);
-        RaycastHit h;
-
-        if (Physics.Raycast(r, out h))
-        {
-            if (h.collider.tag == "Wall")
-            {
-                return false;
-            }
-        }
-        return true;
     }
 
     public void OnTriggerEnter(Collider other)
     {
         if (other.tag.Equals("Goal"))
         {
-            canMove = false;
+            gameOver = true;
             ui.text.text = "You Win! Press R to restart.";
         }
     }
